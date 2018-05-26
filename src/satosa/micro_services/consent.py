@@ -176,8 +176,9 @@ class Consent(ResponseMicroService):
         :return: Ticket received from the consent service
         """
         jws = JWS(json.dumps(consent_args), alg=self.signing_key.alg).sign_compact([self.signing_key])
-        request = "{}/creq/{}".format(self.api_url, jws)
-        res = requests.get(request)
+        payload = dict(jwt=jws)
+        request = "{}/creq/_".format(self.api_url)
+        res = requests.post(request, data=payload)
 
         if res.status_code != 200:
             raise UnexpectedResponseError("Consent service error: %s %s", res.status_code, res.text)
